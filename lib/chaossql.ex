@@ -5,8 +5,10 @@ defmodule Chaos.SQL do
     @regexp ~r"^\s*CREATE TABLE\s+(?:IF NOT EXISTS)\s+(?<table>\w+)\s+\((?<columns>.*)\)"im
 
     def read_sql(text, extra \\ %{}, delimiter \\ ";") do
+        extra = extra |> Enum.into(%{})
+        
         String.split(text, delimiter) 
-        |> Enum.map(fn(term)-> read_term(term, extra |> Enum.into(%{})) end) 
+        |> Enum.map(fn(term)-> read_term(term, extra) end) 
         |> List.flatten
     end
 

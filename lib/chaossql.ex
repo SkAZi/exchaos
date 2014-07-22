@@ -32,7 +32,7 @@ defmodule Chaos.SQL do
                             |> read_row_name
 
                         {name, opts} = case ret do
-                            nil -> {nil, nil}
+                            nil -> {nil, %{}}
                             {name, opts} -> {name, opts}
                         end
 

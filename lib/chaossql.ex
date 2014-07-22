@@ -83,8 +83,13 @@ defmodule Chaos.SQL do
     defp read_row_params(name, type, params, [head|tail]) do
         case String.upcase(head) do
             "AUTO_INCREMENT" -> {nil, %{}}
-            "DEFAULT" -> nil
-            #"NULL" -> nil
+            "DEFAULT" -> {nil, %{}}
+            "NOT" -> 
+                case tail do
+                    ["NULL"|tail] -> read_row_params(name, type, params, tail)
+                    _ -> {nil, %{}}
+                end
+                
             _ -> read_row_params(name, type, params, tail)
         end
     end

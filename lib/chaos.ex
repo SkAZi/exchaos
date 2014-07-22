@@ -114,8 +114,9 @@ defmodule Chaos do
     defp generate_float_fn(r), do: :random.uniform() * (r.last - r.first) + r.first
 
     defp generate_date_fn(from, to) do
-        generate_int_fn(date_to_int(from)..date_to_int(to))
+        ret = generate_int_fn(date_to_int(from)..date_to_int(to))
         |> int_to_date
+        "\"#{ret}\""
     end
     defp date_to_int(date) do
         date = String.split(date, "-") 

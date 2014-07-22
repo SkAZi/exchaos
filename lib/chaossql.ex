@@ -6,7 +6,7 @@ defmodule Chaos.SQL do
 
     def read_sql(text, extra \\ %{}, delimiter \\ ";") do
         String.split(text, delimiter) 
-        |> Enum.map(fn(term)-> read_term(term, extra) end) 
+        |> Enum.map(fn(term)-> read_term(term, extra |> Enum.into(%{})) end) 
         |> List.flatten
     end
 

@@ -18,7 +18,7 @@ defmodule Chaos.SQL do
     defp read_table(term, extra) do
         case Regex.named_captures(@regexp, term) do
             %{"table" => table, "columns" => columns} ->
-                count = 1000
+                count = Dict.get(extra, table, 1000) 
                 opts = columns
                     |> String.split(",")
                     |> Enum.map fn(column)-> 
@@ -77,8 +77,8 @@ defmodule Chaos.SQL do
     defp read_row_params(name, type, params, [head|tail]) do
         case String.upcase(head) do
             "AUTO_INCREMENT" -> {nil, %{}}
+            "DEFAULT" -> nil
             #"NULL" -> nil
-            #"DEFAULT" -> nil
             _ -> read_row_params(name, type, params, tail)
         end
     end

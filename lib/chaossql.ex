@@ -29,7 +29,6 @@ defmodule Chaos.SQL do
                             |> String.split(" ") 
                             |> read_row_name
 
-                        IO.puts "#{inspect Dict.merge(opts, Dict.get(extra, "#{table}.#{name}", %{}))}"
                         {name, Dict.merge(opts, Dict.get(extra, "#{table}.#{name}", %{}))}
                     end 
 

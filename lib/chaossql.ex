@@ -6,7 +6,7 @@ defmodule Chaos.SQL do
 
     def read_sql(text, extra \\ %{}, delimiter \\ ";") do
         extra = extra |> Enum.into(%{})
-        
+
         String.split(text, delimiter) 
         |> Enum.map(fn(term)-> read_term(term, extra) end) 
         |> List.flatten
@@ -27,9 +27,14 @@ defmodule Chaos.SQL do
                         [column|_] = String.split(column, "#", parts: 2)
                         [column|_] = String.split(column, "--", parts: 2)
 
-                        {name, opts} = String.strip(column) 
+                        ret = String.strip(column) 
                             |> String.split(" ") 
                             |> read_row_name
+
+                        {name, opts} = case ret do
+                            nil -> {nil, nil}
+                            {name, opts} -> {name, opts}
+                        end
 
                         {name, Dict.merge(opts, Dict.get(extra, "#{table}.#{name}", %{}))}
                     end 

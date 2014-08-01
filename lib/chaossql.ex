@@ -64,6 +64,8 @@ defmodule Chaos.SQL do
         cond do
             type in ["INT", "BIGINT"] -> 
                 read_row_params(name, :int, %{}, tail)
+            type in ["FLOAT"] -> 
+                read_row_params(name, :float, %{}, tail)
             type in ["DATETIME", "DATE"] -> 
                 read_row_params(name, :date, %{}, tail)
             type in ["CHAR", "VARCHAR"] and len > 16 ->
@@ -89,7 +91,6 @@ defmodule Chaos.SQL do
                     ["NULL"|tail] -> read_row_params(name, type, params, tail)
                     _ -> {nil, %{}}
                 end
-                
             _ -> read_row_params(name, type, params, tail)
         end
     end

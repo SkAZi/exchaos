@@ -2,7 +2,7 @@ defmodule Chaos do
 
     def make(opts, count, names \\ true) do
         params = precompile_params(opts)
-        Stream.map 1..count, fn(_x)->
+        Stream.map 1..count, fn(x)->
             res = Enum.map(params, fn
                 {name, {:value, value}} ->
                     if names, do: {name, value}, else: value
@@ -11,7 +11,7 @@ defmodule Chaos do
                     if names, do: {name, random_element(values)}, else: random_element(values)
                 
                 {name, {:fn, f}} ->
-                    if names, do: {name, f.()}, else: f.()    
+                    if names, do: {name, f.(x)}, else: f.(x)
             end) 
 
             if names, do: res |> Enum.into(%{}), else: res
@@ -38,36 +38,36 @@ defmodule Chaos do
         do: {:fn, f}
 
     defp precompile_param(%{type: :uuid, count: count}), 
-        do: {:values, Enum.map(1..count, fn(_x)-> generate_uuid_fn() end)}
+        do: {:values, Enum.map(1..count, &generate_uuid_fn/1)}
     defp precompile_param(%{type: :uuid}), 
-        do: {:fn, &generate_uuid_fn/0}
+        do: {:fn, &generate_uuid_fn/1}
 
     defp precompile_param(%{type: :int, count: count, range: range}), 
         do: {:values, Enum.map(1..count, generate_int_fn(range))}
     defp precompile_param(%{type: :int, count: count}), 
         do: {:values, Enum.map(1..count, generate_int_fn(1..999999999))}
     defp precompile_param(%{type: :int, range: range}), 
-        do: {:fn, fn()-> generate_int_fn(range) end}
+        do: {:fn, fn(_x)-> generate_int_fn(range) end}
     defp precompile_param(%{type: :int}), 
-        do: {:fn, fn()-> generate_int_fn(1..999999999) end}
+        do: {:fn, fn(_x)-> generate_int_fn(1..999999999) end}
 
     defp precompile_param(%{type: :float, count: count, range: range}), 
         do: {:values, Enum.map(1..count, generate_float_fn(range))}
     defp precompile_param(%{type: :float, count: count}), 
         do: {:values, Enum.map(1..count, :random.uniform)}
     defp precompile_param(%{type: :float, range: range}), 
-        do: {:fn, fn()-> generate_float_fn(range) end}
+        do: {:fn, fn(_x)-> generate_float_fn(range) end}
     defp precompile_param(%{type: :float}), 
-        do: {:fn, fn()-> :random.uniform end}
+        do: {:fn, fn(_x)-> :random.uniform end}
 
     defp precompile_param(%{type: :date, count: count, range: range}), 
         do: {:values, Enum.map(1..count, generate_date_fn(range.first, range.last))}
     defp precompile_param(%{type: :date, count: count}), 
         do: {:values, Enum.map(1..count, generate_date_fn("1970-01-01", "2014-01-01"))}
     defp precompile_param(%{type: :date, range: range}), 
-        do: {:fn, fn()-> generate_date_fn(range.first, range.last) end}
+        do: {:fn, fn(_x)-> generate_date_fn(range.first, range.last) end}
     defp precompile_param(%{type: :date}),
-        do: {:fn, fn()-> generate_date_fn("2000-01-01", "2014-01-01")end}
+        do: {:fn, fn(_x)-> generate_date_fn("2000-01-01", "2014-01-01")end}
 
     defp precompile_param(%{type: :string, mask: mask, data: data, count: count}) do 
         f = generate_string_fn(mask, data)
@@ -95,7 +95,7 @@ defmodule Chaos do
         :lists.nth(:random.uniform(length(list)), list)
     end
 
-    defp generate_uuid_fn() do
+    defp generate_uuid_fn(_x) do
         use Bitwise
         <<a::32, b::16, c::16, d::16, e::48>> = :crypto.rand_bytes(16)
 
